@@ -1,0 +1,81 @@
+%include "io64.inc"
+
+section .text
+global main
+main:
+    ;write your code here
+    GET_DEC 2, a
+    GET_DEC 2, b
+    GET_DEC 2, c
+    
+    mov ax, [a]
+    mov bx, [b]
+    mov cx, [c]
+    
+    cmp ax, bx
+    jg L_big
+    mov [max], bx
+    jmp L_big_end
+L_big:
+    mov [max], ax
+L_big_end:
+
+    cmp [max], cx
+    jg L_big1
+    mov [max], cx
+    jmp L_big1_end
+L_big1:
+L_big1_end:
+
+    cmp ax, bx
+    jl L_small
+    mov [min], bx
+    jmp L_small_end
+L_small:
+    mov [min], ax
+L_small_end:
+
+    cmp [min], cx
+    jl L_small1
+    mov [min], cx
+    jmp L_small1_end
+L_small1:
+L_small1_end:
+
+    mov ax, [min]
+    mov bx, [max]
+    mul bx
+    shl edx, 16
+    and eax, 0x0000ffff
+    or edx, eax
+    mov [total], eax 
+    
+    PRINT_STRING msg_min
+    PRINT_DEC 2, min
+    NEWLINE
+    
+    PRINT_STRING msg_max
+    PRINT_DEC 2, max
+    NEWLINE
+    
+    PRINT_STRING msg_mul
+    PRINT_DEC 2, total
+    NEWLINE
+    
+    
+    
+    xor rax, rax
+    ret
+
+section .data
+    msg_min db 'min : ', 0x00
+    msg_max db 'max : ', 0x00
+    msg_mul db 'min*max : ', 0x00
+
+section .bss
+    a resw 1
+    b resw 1
+    c resw 1
+    max resw 1
+    min resw 1
+    total resw 1

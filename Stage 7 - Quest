@@ -1,0 +1,112 @@
+extern MessageBoxA
+extern CreateFileA
+extern ReadFile
+extern WriteFile
+extern CloseHandle
+
+BLOCK_SIZE equ 10
+
+section .text
+global start
+
+start:
+	call message1
+	call openfile
+	call copyfile_start
+	call closehnadle
+	call message2
+	
+	xor eax, eax
+	ret
+
+openfile:		
+		push 0
+		push 0x80
+		push 0x03
+		push 0
+		push 0x00
+		push 0x01
+		push rfileName
+		call CreateFileA
+		mov [hrFile], eax
+		
+		push 0
+		push 0x80
+		push 0x01
+		push 0
+		push 0x00
+		push 0x02
+		push wfileName
+		call CreateFileA
+		mov [hwFile], eax
+		
+		ret
+	
+closehnadle:		
+		mov eax, [hwFile]
+		push eax
+		call CloseHandle
+		
+		mov eax, [hrFile]
+		push eax
+		call CloseHandle
+		
+		ret
+		
+message1:
+	
+		push 0x40
+		push caption
+		push msg1
+		push 0x00
+		call MessageBoxA
+		ret
+		
+copyfile_start:	
+		push 0
+		push dwNumberOfBytes
+		push BLOCK_SIZE
+		push Buffer
+		mov eax, [hrFile]
+		push eax
+		call ReadFile
+		
+		mov eax, [dwNumberOfBytes]
+		cmp eax, 0
+		je copyfile_end
+		
+		push 0
+		push dwBytesWritten
+		mov eax, [dwNumberOfBytes]
+		push eax
+		push Buffer
+		mov eax, [hwFile]
+		push eax
+		call WriteFile
+		jmp copyfile_start
+		
+copyfile_end:
+		ret
+
+message2:		
+		push 0x40
+		push caption
+		push msg2
+		push 0x00
+		call MessageBoxA
+		ret
+		
+section .data
+	rfileName db 'mm1.asm',0
+	wfileName db 'mm1.asm.out',0
+	caption db 'copy message',0
+	msg1 db 'copy start!',0
+	msg2 db 'copy finished!',0
+	
+section .bss
+	hrFile resd 1
+	hwFile resd 1
+	dwBytesWritten resd 1
+	dwNumberOfBytes resd 1
+	Buffer resb BLOCK_SIZE+1
+		

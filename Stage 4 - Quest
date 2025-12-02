@@ -1,0 +1,70 @@
+%include "io64.inc"
+
+section .text
+global main
+main:
+    ;write your code here
+    GET_DEC 2, a
+    
+    mov cx, word [a]
+    mov ebx, 1
+    
+    
+L1:
+    mov ax, bx
+    xor dx, dx
+    div word [c]
+    
+    cmp dx, 0
+    jne L_not_equal
+    
+    movzx r8d, word [y]
+    mov word [you+r8d*2], bx
+    inc word [y]
+    
+L_not_equal:
+    inc bx
+    loop L1
+    
+    PRINT_STRING msg1
+    PRINT_DEC 2, y
+    NEWLINE
+    
+    mov eax, 0
+    mov bx, word [y]
+    PRINT_STRING msg2
+    NEWLINE
+L2:    
+    PRINT_DEC 2, you+eax*2
+    NEWLINE
+    inc eax
+    cmp eax, ebx
+    jl L2
+    
+    mov ecx, ebx
+    mov ebx, 0
+    xor eax, eax
+    
+L3: 
+    add ax, word [you+ebx*2]
+    inc ebx
+    loop L3
+    
+    PRINT_STRING msg3
+    PRINT_DEC 2, ax    
+     
+     
+    xor rax, rax
+    ret
+    
+section .data
+    y dw 0
+    b dw 1
+    c dw 3
+    msg1 db 'number of 3s multiples: ', 0x00
+    msg2 db 'list of 3s multiples: ', 0x00
+    msg3 db 'sum of 3s multiples: ', 0x00
+    
+section .bss
+    a resw 1
+    you resw 100

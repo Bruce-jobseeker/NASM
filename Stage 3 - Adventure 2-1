@@ -1,0 +1,28 @@
+%include "io64.inc"
+
+section .text
+global main
+main:
+    ;write your code here
+    xor rax, rax
+    
+    mov edx, [a]
+    mov eax, [b]
+    
+    mov ebx, 0x0
+    shl edx, 16
+    or edx, eax
+    
+    PRINT_HEX 4, [a]
+    NEWLINE
+    PRINT_HEX 4, [b]
+    NEWLINE
+    PRINT_HEX 8, edx
+    
+    
+    
+    ret
+    
+section .data
+    a dd 0x00001234
+    b dd 0x00005678

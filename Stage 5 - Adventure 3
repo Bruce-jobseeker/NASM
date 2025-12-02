@@ -1,0 +1,32 @@
+%include "io64.inc"
+
+    %macro factor 1
+      loop:  
+        dec  %1
+        mul %1
+        cmp %1, 1
+        jg loop
+    %endmacro
+    
+section .text
+global main
+main:
+    ;write your code here
+    GET_DEC 4, a
+    mov ebx, [a]
+    mov eax, ebx
+    
+    factor ebx 
+
+    PRINT_STRING msg1
+    NEWLINE
+    PRINT_DEC 4, eax
+    
+    xor rax, rax
+    ret
+    
+section .data
+    msg1 dd 'factorial: ', 0x00
+
+section .bss
+    a resd 1

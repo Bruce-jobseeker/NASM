@@ -1,0 +1,36 @@
+%include "io64.inc"
+
+section .text
+global main
+main:
+    ;write your code here
+    GET_DEC 4, a
+    mov ebx, [a]
+    mov eax, ebx
+    
+    call factor
+    
+print:    
+
+    PRINT_STRING msg1
+    NEWLINE
+    PRINT_DEC 4, eax
+    
+    xor rax, rax
+    ret
+    
+factor:      
+    dec ebx
+    mul ebx
+    cmp ebx, 1
+    jg factor
+    ret
+
+
+
+    
+          
+section .data
+    msg1 dd 'factorial : ', 0x00
+section .bss
+    a resd 1

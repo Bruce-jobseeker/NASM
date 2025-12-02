@@ -1,0 +1,45 @@
+%include "io64.inc"
+
+section .text
+global main
+main:
+    ;write your code here
+    GET_DEC 2, a
+    mov eax, [a]
+    mov ecx, 0
+   
+
+L0:
+    cmp eax, 0
+    je L1
+    
+    xor edx, edx
+    div word [two]
+    
+    mov [bin+ecx*4], dx
+    inc ecx
+    jmp L0
+    
+L1: 
+    
+    PRINT_STRING msg
+L_print:
+    cmp ecx, -1
+    je L2
+    
+    mov eax, [bin+ecx*4]
+    PRINT_DEC 2, eax
+    dec ecx
+    jmp L_print
+L2:
+    NEWLINE
+    xor rax, rax
+    ret
+    
+section .data
+    two dd 2
+    msg dd 'binary number: ', 0x00
+            
+section .bss
+    a resd 1
+    bin resd 32

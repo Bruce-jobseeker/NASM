@@ -1,0 +1,57 @@
+%include "io64.inc"
+
+section .text
+global CMAIN
+CMAIN:
+    
+    GET_DEC 2, num1
+    GET_DEC 2, num2
+    
+    mov ax, [num1]
+    add ax, [num2]
+    
+    PRINT_STRING msg_sum
+    PRINT_DEC 2, ax
+    NEWLINE
+    
+    mov ax, [num1]
+    sub ax, [num2]
+    
+    PRINT_STRING msg_sub
+    PRINT_DEC 2, ax
+    NEWLINE
+    
+    mov ax, [num1]
+    mov bx, [num2]
+    mul bx
+    
+    PRINT_STRING msg_mul
+    PRINT_DEC 2, ax
+    NEWLINE
+    
+    xor dx, dx
+    mov ax, [num1]
+    mov bx, [num2]
+    div bx
+    
+    PRINT_STRING msg_div
+    PRINT_DEC 2, ax
+    NEWLINE
+    
+    PRINT_STRING msg_rem
+    PRINT_DEC 2, dx
+    NEWLINE
+    
+    xor rax, rax
+    ret
+
+section .data
+    msg_sum db 'sum : ', 0x00
+    msg_sub db 'sub : ', 0x00
+    msg_mul db 'mul : ', 0x00
+    msg_div db 'div : ', 0x00
+    msg_rem db 'rem : ', 0x00
+            
+section .bss
+    num1 resw 1
+    num2 resw 1

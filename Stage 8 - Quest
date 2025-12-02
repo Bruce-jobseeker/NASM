@@ -1,0 +1,68 @@
+%include "io.inc"
+extern lotto
+extern srand
+extern time
+extern get_stdout
+
+section .text
+global main
+main:
+          
+    push dword 0         
+    call time             
+    add esp, 4            
+
+    push eax              
+    call srand            
+    add esp, 4 
+
+    mov ebx, 0
+
+find_lotto:
+    call lotto
+    mov ecx, 0
+
+loop_lotto:
+    cmp ecx, ebx
+    jge found_lotto
+    cmp [you+ecx*4], eax
+    je find_lotto
+    inc ecx
+    jmp loop_lotto
+
+found_lotto:
+    mov [you+ebx*4], eax
+    inc ebx
+    cmp ebx, 6
+    jl find_lotto
+
+print_lotto:
+    PRINT_STRING msg1
+
+    PRINT_DEC 4, you
+    PRINT_STRING msg2
+
+    PRINT_DEC 4, you+4
+    PRINT_STRING msg2
+    
+    PRINT_DEC 4, you+8
+    PRINT_STRING msg2
+
+    PRINT_DEC 4, you+12
+    PRINT_STRING msg2
+    
+    PRINT_DEC 4, you+16
+    PRINT_STRING msg2
+    
+    PRINT_DEC 4, you+20
+    NEWLINE
+
+    xor eax, eax
+    ret
+
+section .data
+    msg1 db 'Lotto : ',0
+    msg2 db ',',0
+
+section .bss
+    you resd 6

@@ -1,0 +1,7 @@
+section .text
+global myadd
+
+myadd:
+    mov eax, edi
+    add eax, esi  
+    ret        

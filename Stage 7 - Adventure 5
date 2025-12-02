@@ -1,0 +1,47 @@
+extern MessageBoxA
+extern CopyFileA
+
+section .text
+global start
+start:
+    ;write your code here
+    
+    call message1
+    call copyfile
+    call message2
+    
+    xor eax, eax
+    ret
+    
+copyfile: 
+    push 0 
+    push wfilename
+    push rfilename
+    call CopyFileA
+    ret
+    
+message1:
+	
+    push 0x40
+    push caption
+    push msg1
+    push 0x00
+    call MessageBoxA
+    ret
+
+message2:
+	
+    push 0x40
+    push caption
+    push msg2
+    push 0x00
+    call MessageBoxA
+    ret
+    
+    
+section .data
+    rfilename db 'mm2.asm',0
+    wfilename db 'mm2.asm.out',0
+    caption db 'copy message',0
+    msg1 db 'copy start!',0
+    msg2 db 'copy finished!',0

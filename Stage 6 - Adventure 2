@@ -1,0 +1,65 @@
+extern printf
+extern lotto
+extern time
+extern srand
+
+section .text
+global main
+main:
+    ;write your code here
+    sub rsp, 40
+    xor rcx, rcx
+    call time 
+    mov rcx, rax
+    call srand
+    add rsp, 40
+    
+    mov ebx, 0
+
+find_lotto:
+
+    call lotto
+    mov ecx, 0
+    
+check_loop:
+
+    cmp ecx, ebx
+    jge found_lotto
+    cmp [you+4*ecx], eax
+    je find_lotto
+    inc ecx
+    jmp check_loop
+
+found_lotto:
+
+    mov [you+4*ebx], eax
+    inc ebx
+    cmp ebx, 6
+    jl find_lotto
+
+print_lotto:
+
+    sub rsp, 40           
+
+    mov rcx, msg     
+    mov edx, dword [you]     
+    mov r8d, dword [you+4]  
+    mov r9d, dword [you+8]    
+    mov eax, dword [you+12] 
+    mov dword [rsp+32], eax
+    mov eax, dword [you+16]
+    mov dword [rsp+40], eax
+    mov eax, dword [you+20]
+    mov dword [rsp+48], eax
+
+    call printf
+
+    add rsp, 40          
+    xor eax, eax
+    ret
+
+
+section .data
+    msg db "Lotto : %d, %d, %d, %d, %d, %d",0
+section .bss
+    you resd 6

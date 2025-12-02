@@ -1,0 +1,25 @@
+%include 'io64.inc'
+
+section .text
+global main
+main:
+    ;write your code here
+    mov ax, [a]
+    
+    xor ebx, ebx
+    mov bx, [b]
+    mov [esp-2], ax
+    mov [esp-4], bx
+    mov ebx, [esp-4]
+    PRINT_HEX 4, [a]
+    NEWLINE
+    PRINT_HEX 4, [b]
+    NEWLINE
+    PRINT_HEX 8, ebx 
+        
+    xor rax, rax
+    ret
+    
+section .data
+    a dd 0x1234
+    b dd 0x5678

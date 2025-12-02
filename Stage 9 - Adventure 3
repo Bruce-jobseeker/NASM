@@ -1,0 +1,70 @@
+section .text
+global main
+main:
+    
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg_start
+    mov rdx, len_start
+    syscall
+
+
+    mov rax, 2
+    mov rdi, sourcefile
+    mov rsi, 2
+    mov rdx, 0
+    syscall
+    mov [sid], rax
+
+    mov rax, 0
+    mov rdi, [sid]
+    mov rsi, buffer
+    mov rdx, len_buffer
+    syscall
+    mov [bytes_read], rax
+
+    mov rax, 3
+    mov rdi, [sid]
+    syscall
+
+    mov rax, 2
+    mov rdi, newfile
+    mov rsi, 577
+    mov rdx, 0777
+    syscall
+    mov [did], rax
+    
+    mov rax, 1
+    mov rdi, [did]
+    mov rsi, buffer
+    mov rdx, [bytes_read]
+    syscall
+
+    mov rax, 3
+    mov rdi, [did]
+    syscall
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg_end
+    mov rdx, len_end
+    syscall
+
+    mov rax, 60
+    xor rdi, rdi
+    syscall
+
+section .data
+    sourcefile db 'demo64.txt',0
+    newfile db 'demo64.txt.out',0
+    msg_start db 'program start!',0
+    len_start equ $ -msg_start
+    msg_end db 'program end!',0
+    len_end equ $ -msg_end
+
+section .bss
+    sid resq 1
+    did resq 1
+    bytes_read resq 1
+    buffer resq 60
+    len_buffer equ 60

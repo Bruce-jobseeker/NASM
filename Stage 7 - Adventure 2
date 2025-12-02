@@ -1,0 +1,29 @@
+extern MessageBoxA
+global start
+
+section .text
+start:
+    call num_to_char
+
+    xor ebx, ebx
+    ret
+
+num_to_char:
+  
+    mov ebx, 4
+  
+    add bl, 'A'
+    mov [a], bl
+
+    push 0x40
+    push caption
+    push a
+    push 0x00
+    call MessageBoxA
+    ret
+
+section .data
+caption db 'Num to Char',0
+
+section .bss
+a resb 1

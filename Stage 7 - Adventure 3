@@ -1,0 +1,140 @@
+default rel
+
+extern MessageBoxA
+extern CreateFileA
+extern ReadFile
+extern WriteFile
+extern CloseHandle
+
+%define GENERIC_READ        0x80000000
+%define GENERIC_WRITE       0x40000000
+%define FILE_SHARE_NONE     0
+%define CREATE_ALWAYS       2
+%define OPEN_EXISTING       3
+%define FILE_ATTRIBUTE_NORMAL 0x00000080
+%define MB_ICONINFORMATION  0x00000040
+
+%define BLOCK_SIZE 10
+
+section .text
+global start
+
+start:
+
+    call message1
+    call openfile
+    call copyfile_start
+    call closehandle
+    call message2
+
+    xor rax, rax
+    ret
+
+
+openfile:
+    
+    lea rcx, [rel rfileName]         
+    mov rdx, GENERIC_READ           
+    xor r8d, r8d                     
+    xor r9d, r9d                     
+    sub rsp, 56                      
+    mov qword [rsp+32], OPEN_EXISTING           
+    mov qword [rsp+40], FILE_ATTRIBUTE_NORMAL    
+    mov qword [rsp+48], 0                        
+    call CreateFileA
+    add rsp, 56
+    mov [hrFile], rax
+
+    
+    lea rcx, [rel wfileName]        
+    mov rdx, GENERIC_WRITE           
+    xor r8d, r8d                    
+    xor r9d, r9d                    
+    sub rsp, 56
+    mov qword [rsp+32], CREATE_ALWAYS            
+    mov qword [rsp+40], FILE_ATTRIBUTE_NORMAL    
+    mov qword [rsp+48], 0                        
+    call CreateFileA
+    add rsp, 56
+    mov [hwFile], rax
+
+    ret
+
+
+closehandle:
+    mov rcx, [hwFile]
+    call CloseHandle
+
+    mov rcx, [hrFile]
+    call CloseHandle
+    ret
+
+
+message1:
+    
+    xor rcx, rcx
+    lea rdx, [rel msg1]
+    lea r8,  [rel caption]
+    mov r9d, MB_ICONINFORMATION
+    sub rsp, 32                   
+    call MessageBoxA
+    add rsp, 32
+    ret
+
+message2:
+    
+    xor rcx, rcx
+    lea rdx, [rel msg2]
+    lea r8,  [rel caption]
+    mov r9d, MB_ICONINFORMATION
+    sub rsp, 32
+    call MessageBoxA
+    add rsp, 32
+    ret
+
+
+copyfile_start:
+.read_next:
+    
+    mov rcx, [hrFile]               
+    lea rdx, [rel Buffer]           
+    mov r8d, BLOCK_SIZE             
+    lea r9,  [rel dwNumberOfBytes]  
+    sub rsp, 40                     
+    mov qword [rsp+32], 0          
+    call ReadFile
+    add rsp, 40
+
+  
+    mov eax, [rel dwNumberOfBytes]
+    test eax, eax
+    jz .done
+
+   
+    mov rcx, [hwFile]              
+    lea rdx, [rel Buffer]          
+    mov r8d, [rel dwNumberOfBytes]  
+    lea r9,  [rel dwBytesWritten]   
+    sub rsp, 40
+    mov qword [rsp+32], 0          
+    call WriteFile
+    add rsp, 40
+
+    jmp .read_next
+
+.done:
+    ret
+
+section .data
+rfileName db 'mm2.asm',0
+wfileName db 'mm2.asm.out',0
+caption   db 'copy message',0
+msg1      db 'copy start!',0
+msg2      db 'copy finished!',0
+
+section .bss
+hrFile           resq 1            
+hwFile           resq 1
+dwBytesWritten   resd 1            
+dwNumberOfBytes  resd 1           
+Buffer           resb BLOCK_SIZE+1

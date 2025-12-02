@@ -1,0 +1,95 @@
+section .text
+global main
+main:
+    
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_start
+    mov edx, len_start
+    int 0x80
+
+
+open_file:
+
+    mov eax, 5
+    mov ebx, sourcefile
+    mov ecx, 2
+    int 0x80
+    mov [sid], eax
+    cmp eax, 0
+    jl create_new
+
+    mov eax, 3
+    mov ebx, [sid]
+    mov ecx, buffer
+    mov edx, len_buffer
+    int 0x80
+    mov [bytes_read], eax
+
+    mov eax, 6
+    mov ebx, [sid]
+    int 0x80
+
+    jmp file_exist    
+
+create_new:
+    mov eax, 8
+    mov ebx, sourcefile
+    mov ecx, 0777o
+    int 0x80
+    mov [sid], eax
+
+    mov eax, 6
+    mov ebx, [sid]
+    int 0x80
+
+    jmp open_file
+
+file_exist:
+
+    mov eax, 8
+    mov ebx, newfile
+    mov ecx, 0777o
+    int 0x80
+    mov [did], eax
+    
+    mov eax, 4
+    mov ebx, [did]
+    mov ecx, buffer
+    mov edx, [bytes_read]
+    int 0x80
+
+    mov eax, 4
+    mov ebx, [did]
+    mov ecx, msg
+    mov edx, len_msg
+    int 0x80
+
+    mov eax, 6
+    mov ebx, [did]
+    int 0x80
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_end
+    mov edx, len_end
+    int 0x80
+
+    ret
+
+section .data
+    sourcefile db 'demo.txt',0
+    newfile db 'demo.txt.out',0
+    msg_start db 'program start!',0xA
+    len_start equ $-msg_start
+    msg_end db 'program end!',0xA
+    len_end equ $-msg_end
+    msg db 'I love Valeriya McAdams!',0xA
+    len_msg equ $-msg
+
+section .bss
+    sid resd 1
+    did resd 1
+    buffer resb 30
+    len_buffer equ 30
+    bytes_read resd 1
